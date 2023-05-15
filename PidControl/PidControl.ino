@@ -1,82 +1,135 @@
 #define enM1a 2
-#define enM1b 3
+#define enM1b 11
+#define enM2a 3
+#define enM2b 12
 #define m1pwm 5
 #define m1dir 4
+#define m2pwm 6
+#define m2dir 7
 
-int pos = 0;
-int p=0;
-int i=0;
-int d=0;
+int p1=0;
+int i1=0;
+int d1=0;
 
+int p2=0;
+int i2=0;
+int d2=0;
 
+int error1=0;
+int preverror1=0;
 
-int error=0;
-int preverror=0;
+int error2=0;
+int preverror2=0;
 
+float kp1=15;
+float kd1=0.001;
+float ki1=1;
 
+float kp2=15;
+float kd2=0.001;
+float ki2=1;
 
-
-long prevT = 0;
-float eprev = 0;
-float eint = 0;
-
-float kp = 10;
-float ki = 0.001;
-float kd = 2;
-
+int posa = 0;
+int posb = 0;
 
 void setup() {
   Serial.begin(9600);
   pinMode(m1pwm, OUTPUT);
   pinMode(m1dir, OUTPUT);
+  pinMode(m2pwm, OUTPUT);
+  pinMode(m2dir, OUTPUT);
+  pinMode(enM2a, INPUT);
+  pinMode(enM2b, INPUT);
   pinMode(enM1a, INPUT);
   pinMode(enM1b, INPUT);
-  attachInterrupt(digitalPinToInterrupt(enM1a), encoder, RISING);
+  attachInterrupt(digitalPinToInterrupt(enM2a), encoder2, RISING);
+  attachInterrupt(digitalPinToInterrupt(enM1a), encoder1, RISING);
+
 
 }
 
 void loop() {
-  int tar = 600;
-  
-  error = tar-pos;
-  p=error;
-  i=i+error;
-  d = error-preverror;
-
-  int pid = kp*p+kd*d+ki*i;
-    if(pid>255){
-    pid=255;
-    }
-  if(pid<-255){
-    pid=-255;
-  }
-  ms(pid);
-   Serial.print(tar);
-  Serial.print(" ");
-  Serial.print(pos);
-  Serial.println();
-
-
-
+    pid(100,100);
+    Serial.print(posa);
+    Serial.print(" ");
+    Serial.println(posb);
+ 
 }
 
-void encoder(){
-  int b = digitalRead(enM1b);
+void motorspeed(int x, int y){
+  if(x<0){
+    if(x<-255){
+      x =-255;
+      }
+    x = -x;
+    digitalWrite(m1dir, LOW);
+    analogWrite(m1pwm, x);
+    }else{
+      digitalWrite(m1dir, HIGH);
+      analogWrite(m1pwm, x);
+      }
+   if(y<0){
+    if(y<-255){
+      y =-255;
+      }
+    y =-y;
+    digitalWrite(m2dir, HIGH);
+    analogWrite(m2pwm, y);
+    }else{
+      digitalWrite(m2dir, LOW);
+      analogWrite(m2pwm, y);
+      }
+     
+  }
+
+void pid(int u, int v){
+  error1 = u-posa;
+  p1=error1;
+  i1=i1+error1;
+  d1 = error1-preverror1;
+
+  error2 = v-posb;
+  p2=error2;
+  i2=i2+error2;
+  d2 = error2-preverror2;
+
+  int pid1 = kp1*p1+kd1*d1+ki1*i1;
+    if(pid1>255){
+    pid1=255;
+    }
+  if(pid1<-255){
+    pid1=-255;
+  }
+
+  int pid2 = kp2*p2+kd2*d2+ki2*i2;
+    if(pid2>255){
+    pid2=255;
+    }
+  if(pid2<-255){
+    pid2=-255;
+  }
+
+  motorspeed(pid1, pid2);
+  
+  
+  }
+
+void encoder2(){
+  int b = digitalRead(enM2b);
   if(b>0){
-    pos++;
+    posb++;
     }
     else{
-      pos--;
+      posb--;
       }
   }
 
-void ms(int s1){
-  if(s1<0){
-    s1 = -s1;
-    digitalWrite(m1dir, HIGH);
-    analogWrite(m1pwm, s1);
-    }else{
-      digitalWrite(m1dir, LOW);
-      analogWrite(m1pwm, s1);
+void encoder1(){
+  int a = digitalRead(enM1b);
+  if(a>0){
+    posa--;
+    }
+    else{
+      posa++;
       }
   }
