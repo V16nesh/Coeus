@@ -1,8 +1,8 @@
 #ifdef ARDUINO_ENC_COUNTER
-  #define LEFT_ENC_PIN_A PA0 
-  #define LEFT_ENC_PIN_B PE0  
-  #define RIGHT_ENC_PIN_A PF5 
-  #define RIGHT_ENC_PIN_B PE1  
+  #define LEFT_ENC_PIN_A PD2
+  #define LEFT_ENC_PIN_B PD3  
+  #define RIGHT_ENC_PIN_A PC4 
+  #define RIGHT_ENC_PIN_B PC5  
 #endif
    
 long readEncoder(int i);
