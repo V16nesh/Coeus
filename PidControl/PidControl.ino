@@ -7,6 +7,8 @@
 #define m2pwm 6
 #define m2dir 7
 
+boolean x = true;
+
 int p1=0;
 int i1=0;
 int d1=0;
@@ -21,13 +23,13 @@ int preverror1=0;
 int error2=0;
 int preverror2=0;
 
-float kp1=15;
-float kd1=0.001;
-float ki1=1;
+float kp1=10;
+float kd1=9;
+float ki1=0;
 
-float kp2=15;
-float kd2=0.001;
-float ki2=1;
+float kp2=10;
+float kd2=10;
+float ki2=0;
 
 int posa = 0;
 int posb = 0;
@@ -49,11 +51,33 @@ void setup() {
 }
 
 void loop() {
-    pid(100,100);
-    Serial.print(posa);
-    Serial.print(" ");
-    Serial.println(posb);
- 
+  while(x){
+    for(int i=0; i<200;i++){
+      Serial.print(posa);
+      Serial.print(" ");
+      Serial.println(posb);
+      pid(450,450);
+    }
+ for(int i=0; i<100;i++){
+      Serial.print(posa);
+      Serial.print(" ");
+      Serial.println(posb);
+      pid(100,800);
+    }
+   for(int i=0; i<100;i++){
+      Serial.print(posa);
+      Serial.print(" ");
+      Serial.println(posb);
+      pid(450,450);
+    }for(int i=0; i<200;i++){
+      Serial.print(posa);
+      Serial.print(" ");
+      Serial.println(posb);
+      pid(-450,-450);
+    }
+    motorspeed(0,0);
+    x = false;
+  } 
 }
 
 void motorspeed(int x, int y){
